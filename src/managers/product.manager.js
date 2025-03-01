@@ -8,18 +8,20 @@ const productsTiendaNube = async () => {
     try {
         const ID_TIENDA = process.env.ID_TIENDA;
         const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-        const USER_AGENT = process.env.USER_AGENT;
+
+        console.log(ID_TIENDA); 
+        console.log(ACCESS_TOKEN);
+
         
-        if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
+        if (!ID_TIENDA || !ACCESS_TOKEN) {
             throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
         }
         const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/products`, {
             method: "GET",
             credentials: 'include',
             headers: {
-                "Authorization": `Bearer ${ACCESS_TOKEN}`,
+                "Authentication": `Bearer ${ACCESS_TOKEN}`,
                 "Content-Type": "application/json",
-                "User-Agent": `${USER_AGENT}`
             }
         });
 

@@ -17,8 +17,7 @@ const productsTiendaNube = async () => {
         const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/products`, {
             method: "GET",
             headers: {
-                "Authentication": `Bearer ${ACCESS_TOKEN}`,
-                "Content-Type": "application/json",
+                "Authentication": `bearer ${ACCESS_TOKEN}`,
                 "User-Agent": `${USER_AGENT}`
             }
         });

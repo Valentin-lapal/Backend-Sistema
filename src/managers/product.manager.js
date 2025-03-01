@@ -6,20 +6,20 @@ require('dotenv').config();
 
 const productsTiendaNube = async () => {
     try {
-        console.log("ID_TIENDA:", process.env.ID_TIENDA);
-        console.log("ACCESS_TOKEN:", process.env.ACCESS_TOKEN);
-        console.log("USER_AGENT:", process.env.USER_AGENT);
+        const ID_TIENDA = process.env.ID_TIENDA;
+        const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
+        const USER_AGENT = process.env.USER_AGENT;
         
-        if (!process.env.ID_TIENDA || !process.env.ACCESS_TOKEN || !process.env.USER_AGENT) {
+        if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
             throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
         }
-        const response = await fetch(`https://api.tiendanube.com/v1/${process.env.ID_TIENDA}/products`, {
+        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/products`, {
             method: "GET",
             credentials: 'include',
             headers: {
-                "Authorization": `Bearer ${process.env.ACCESS_TOKEN}`,
+                "Authorization": `Bearer ${ACCESS_TOKEN}`,
                 "Content-Type": "application/json",
-                "User-Agent": `${process.env.USER_AGENT}`
+                "User-Agent": `${USER_AGENT}`
             }
         });
 

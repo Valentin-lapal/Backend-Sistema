@@ -2,15 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const routes = require("./routes");
 const app = express();
+
 require("dotenv").config();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(",")
-    :[
-        "https://sistema-snowy.vercel.app",
-        "http://localhost:5173",
-    ];
 
+const allowedOrigins = ["https://lavsoft.online"];
 
 app.use(cors({
     origin: function (origin, callback) {

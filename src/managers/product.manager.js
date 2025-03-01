@@ -8,6 +8,7 @@ const productsTiendaNube = async () => {
     try {
         const ID_TIENDA = 5676879;
         const ACCESS_TOKEN = "7f1c9265408e91e6a47dcceedfc8e7914604bc48";
+        const USER_AGENT = "Pragabasics(valentin.lapalma25@gmail.com)"
 
         
         if (!ID_TIENDA || !ACCESS_TOKEN) {
@@ -18,6 +19,7 @@ const productsTiendaNube = async () => {
             headers: {
                 "Authentication": `Bearer ${ACCESS_TOKEN}`,
                 "Content-Type": "application/json",
+                "User-Agent": `${USER_AGENT}`
             }
         });
 

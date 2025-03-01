@@ -10,9 +10,9 @@ const productsTiendaNube = async () => {
         // const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 
         
-        if (!ID_TIENDA || !ACCESS_TOKEN) {
-            throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
-        }
+        // if (!ID_TIENDA || !ACCESS_TOKEN) {
+        //     throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
+        // }
         const response = await fetch(`https://api.tiendanube.com/v1/5676879/products`, {
             method: "GET",
             headers: {

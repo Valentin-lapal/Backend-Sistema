@@ -34,7 +34,10 @@ const productsTiendaNube = async () => {
             const productData = {
                 id: product.id,
                 name: product.name?.es || "",
-                description: product.description?.es || ""
+                description: product.description?.es || "",
+                description: product.variant?.price || "",
+                description: product.variant?.position || "",
+                description: product.variant?.stock_management || "",
             };
             await addDoc(productsCollection, productData);
         }

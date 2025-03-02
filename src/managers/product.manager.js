@@ -31,7 +31,12 @@ const productsTiendaNube = async () => {
         const productsCollection = collection(db, "products");
 
         for (const product of products) {
-            await addDoc(productsCollection, product);
+            const productData = {
+                id: product.id,
+                name: product.name?.es || "",
+                description: product.description?.es || ""
+            };
+            await addDoc(productsCollection, productData);
         }
 
         return { message: "Productos sincronizados con Firestore", products }; // Retorna el objeto con el mensaje y los productos

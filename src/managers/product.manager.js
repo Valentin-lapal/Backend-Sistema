@@ -36,8 +36,7 @@ const productsTiendaNube = async () => {
                 name: product.name?.es || "",
                 description: product.description?.es || "",
                 price: product.variants[0]?.price || "",
-                position: product.variants[0]?.position || "",
-                stock_management: product.variants[0]?.stock_management || "",
+                position: product.variants[0]?.position || ""
             };
             await addDoc(productsCollection, productData);
         }

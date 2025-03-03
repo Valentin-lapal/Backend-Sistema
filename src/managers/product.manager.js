@@ -33,14 +33,14 @@ const productsTiendaNube = async () => {
         for (const product of products) {
             const productData = {
                 id: product.id,
-                NumeroOrden: product.number || "",
+                numero_orden: product.number || "",
                 name: product.contact_name || "",
-                description: product.contact_email || "",
-                price: product.contact_phone || "",
+                email: product.contact_email || "",
+                contacto: product.contact_phone || "",
                 nota: product.owner_note || "",
                 direccion: product.shipping_address.address || "",
                 localidad: product.shipping_address.locality || "",
-                ciudad: product.shipping_address.zipcode || "",
+                codigo_postal: product.shipping_address.zipcode || "",
             };
             await addDoc(productsCollection, productData);
         }

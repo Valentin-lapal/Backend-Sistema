@@ -40,7 +40,7 @@ const productsTiendaNube = async () => {
                 nota: product.owner_note || "",
                 direccion: product.shipping_address.address || "",
                 localidad: product.shipping_address.locality || "",
-                ciudad: product.shipping_address.city || "",
+                ciudad: product.shipping_address.zipcode || "",
             };
             await addDoc(productsCollection, productData);
         }

@@ -14,7 +14,7 @@ const productsTiendaNube = async () => {
         if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
             throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
         }
-        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/products`, {
+        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders`, {
             method: "GET",
             headers: {
                 "Authentication": `bearer ${ACCESS_TOKEN}`,
@@ -33,10 +33,9 @@ const productsTiendaNube = async () => {
         for (const product of products) {
             const productData = {
                 id: product.id,
-                name: product.name?.es || "",
-                description: product.description?.es || "",
-                price: product.variants[0]?.price || "",
-                position: product.variants[0]?.position || ""
+                name: product.contact_name || "",
+                description: product.contact_email || "",
+                price: product.contact_phone || "",
             };
             await addDoc(productsCollection, productData);
         }

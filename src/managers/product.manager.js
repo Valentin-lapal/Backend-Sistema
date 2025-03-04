@@ -41,7 +41,7 @@ const productsTiendaNube = async () => {
                 direccion: product.shipping_address.address || "",
                 localidad: product.shipping_address.locality || "",
                 codigo_postal: product.shipping_address.zipcode || "",
-                status: product.status || ""
+                status: product.fulfillments.status || ""
             };
             
             const q = query(productsCollection, where("id", "==", product.id));

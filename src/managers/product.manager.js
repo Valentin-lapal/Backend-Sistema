@@ -19,7 +19,7 @@ const productsTiendaNube = async () => {
             headers: {
                 "Authentication": `bearer ${ACCESS_TOKEN}`,
                 "User-Agent": `${USER_AGENT}`
-            }
+            } 
         });
 
         if (!response.ok) {

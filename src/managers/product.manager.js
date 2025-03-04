@@ -1,4 +1,4 @@
-const { collection, getDocs, addDoc } = require("firebase/firestore");
+const { collection, getDocs, addDoc, query, where } = require("firebase/firestore");
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
@@ -42,10 +42,21 @@ const productsTiendaNube = async () => {
                 localidad: product.shipping_address.locality || "",
                 codigo_postal: product.shipping_address.zipcode || "",
             };
-            await addDoc(productsCollection, productData);
+            
+            const q = query(productsCollection, where("id", "==", product.id));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty){
+                await addDoc(productsCollection, productData);
+                console.log(`Producto con ID ${product.id} agregado a Firestore.`);
+            }else{
+                console.log(`Producto con ID ${product.id} ya existe en Firestore.)`
+
+                );
+            }
         }
 
-        return { message: "Productos sincronizados con Firestore", products }; // Retorna el objeto con el mensaje y los productos
+        return { message: "Productos sincronizados con Firestore", products }; 
     } catch (error) {
         console.error("Error sincronizando productos:", error);
         throw error; 

@@ -34,14 +34,14 @@ const productsTiendaNube = async () => {
             const productData = {
                 id: product.id,
                 numero_orden: product.number || "",
-                name: product.contact_name || "",
-                email: product.contact_email || "",
-                contacto: product.contact_phone || "",
+                name: product.contact?.name || "",
+                email: product.contact?.email || "",
+                contacto: product.contact?.phone || "",
                 nota: product.owner_note || "",
-                direccion: product.shipping_address?.address || "",
+                direccion: product.shipping?.address?.address || "",
                 numero: product.billing?.address?.number || "",
-                localidad: product.shipping_address?.locality || "",
-                codigo_postal: product.shipping_address?.zipcode || "",
+                localidad: product.shipping?.address?.locality || "",
+                codigo_postal: product.shipping?.address?.zipcode || "",
             };
             
             const q = query(productsCollection, where("id", "==", product.id));

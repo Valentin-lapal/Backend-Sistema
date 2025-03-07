@@ -33,15 +33,20 @@ const productsTiendaNube = async () => {
         for (const product of products) {
             const productData = {
                 id: product.id,
-                numero_orden: product.order_details?.number || "",
-                name: product.contact?.name || "",
-                email: product.contact?.email || "",
-                contacto: product.contact?.phone || "",
+                orden: product.number || "",
+                name: product.contact_name || "",
+                email: product.contact_email || "",
+                contacto: product.contact_phone || "",
                 nota: product.owner_note || "",
-                direccion: product.shipping?.address?.street || "",
-                numero: product.billing?.address?.number || "",
-                localidad: product.shipping?.address?.locality || "",
-                codigo_postal: product.shipping?.address?.zipcode || "",
+                direccion: product.billing_address || "",
+                numero: product.billing_number || "",
+                localidad: product.billing_locality || "",
+                nota: product.note || "",
+                codigo_postal: product.billing_zipcode || "",
+                ciudad: product.billing_city || "",
+                provincia: product.billing_province || "",
+                estado: product.status || "",
+                estado: product.shipping_status || "",
             };
             
             const q = query(productsCollection, where("id", "==", product.id));

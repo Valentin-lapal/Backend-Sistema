@@ -35,18 +35,18 @@ const productsTiendaNube = async () => {
                 id: product.id,
                 orden: product.number || "",
                 name: product.contact_name || "",
-                email: product.contact_email || "",
                 contacto: product.contact_phone || "",
-                nota: product.owner_note || "",
+                email: product.contact_email || "",
                 direccion: product.billing_address || "",
                 numero: product.billing_number || "",
                 localidad: product.billing_locality || "",
-                nota: product.note || "",
                 codigo_postal: product.billing_zipcode || "",
                 ciudad: product.billing_city || "",
                 provincia: product.billing_province || "",
+                nota: product.owner_note || "",
+                note: product.note || "",
                 estado: product.status || "",
-                estado: product.shipping_status || "",
+                estadoshi: product.shipping_status || "",
             };
             
             const q = query(productsCollection, where("id", "==", product.id));

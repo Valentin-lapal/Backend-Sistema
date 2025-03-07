@@ -32,7 +32,7 @@ const productsTiendaNube = async () => {
 
         for (const product of products) {
             const productData = {
-                id: product?.id || "",
+                id: product?.id,
                 orden: product?.number || "",
                 name: product?.contact_name || "",
                 contacto: product?.contact_phone || "",

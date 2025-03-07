@@ -38,10 +38,10 @@ const productsTiendaNube = async () => {
                 email: product.contact_email || "",
                 contacto: product.contact_phone || "",
                 nota: product.owner_note || "",
-                direccion: product.shipping_address.address || "",
-                numero: product.billing.address.number || "",
-                localidad: product.shipping_address.locality || "",
-                codigo_postal: product.shipping_address.zipcode || "",
+                direccion: product.shipping_address?.address || "",
+                numero: product.billing?.address?.number || "",
+                localidad: product.shipping_address?.locality || "",
+                codigo_postal: product.shipping_address?.zipcode || "",
             };
             
             const q = query(productsCollection, where("id", "==", product.id));

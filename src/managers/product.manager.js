@@ -39,6 +39,7 @@ const productsTiendaNube = async () => {
                 email: product?.contact_email || "",
                 direccion: product?.billing_address || "",
                 numero: product?.billing_number || "",
+                detalle: product?.billing_floor || "",
                 localidad: product?.billing_locality || "",
                 codigo_postal: product?.billing_zipcode || "",
                 ciudad: product?.billing_city || "",
@@ -47,6 +48,7 @@ const productsTiendaNube = async () => {
                 note: product?.note || "",
                 estado: product?.status || "",
                 estadoshi: product?.shipping_status || "",
+                creacion:product?.created_at || "",
             };
             
             const q = query(productsCollection, where("id", "==", product.id));

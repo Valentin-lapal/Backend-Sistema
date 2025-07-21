@@ -1,4 +1,4 @@
-const { collection, getDocs, addDoc, query, where, doc, updateDoc } = require("firebase/firestore");
+const { collection, getDocs, query, where, doc, updateDoc, setDoc } = require("firebase/firestore");
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
@@ -55,8 +55,9 @@ const productsTiendaNube = async () => {
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty){
-                await addDoc(productsCollection, productData);
-                console.log(`Producto con ID ${product.id} agregado a Firestore.`);
+                const productDocRef = doc(db, "products", product.id.toString());
+                await setDoc(productDocRef, productData);
+                console.log(`Producto con ID ${product.id} agregado a Firestore con ID personalizado.`);
             }else{
                 console.log(`Producto con ID ${product.id} ya existe en Firestore.)`
 

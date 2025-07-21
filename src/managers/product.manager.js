@@ -1,4 +1,4 @@
-const { collection, getDocs, addDoc, query, where } = require("firebase/firestore");
+const { collection, getDocs, addDoc, query, where, doc, updateDoc } = require("firebase/firestore");
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
@@ -48,6 +48,7 @@ const productsTiendaNube = async () => {
                 estado: product?.status || "",
                 estadoshi: product?.shipping_status || "",
                 creacion:product?.created_at || "",
+                situacion: "Pendiente",
             };
             
             const q = query(productsCollection, where("id", "==", product.id));
@@ -84,4 +85,27 @@ const getAllProducts = async () => {
     }
 };
 
-module.exports = { getAllProducts, productsTiendaNube };
+
+
+const updateSituacion = async (req, res) => {
+  const { id } = req.params;
+  const { situacion } = req.body;
+
+  if (!situacion) {
+    return res.status(400).json({ message: "El campo 'situacion' es requerido." });
+  }
+
+  try {
+    const productRef = doc(db, "products", id);
+    await updateDoc(productRef, { situacion });
+
+    res.status(200).json({ message: "Situación actualizada correctamente." });
+  } catch (error) {
+    console.error("Error al actualizar situación:", error);
+    res.status(500).json({ message: "Error al actualizar situación." });
+  }
+};
+
+
+
+module.exports = { getAllProducts, productsTiendaNube, updateSituacion };

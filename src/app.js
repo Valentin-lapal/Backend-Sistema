@@ -6,7 +6,7 @@ const app = express();
 require("dotenv").config();
 
 
-const allowedOrigins = ["https://lavsoft.online"];
+const allowedOrigins = ["https://lavsoft.online", "https://sistema.liverval.com.ar"];
 
 app.use(cors({
     origin: function (origin, callback) {

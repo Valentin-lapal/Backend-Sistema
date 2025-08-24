@@ -39,15 +39,15 @@ const productsTiendaNube = async () => {
             }
 
             // Filtramos pedidos que son retiro en local
-            const esRetiroEnLocal =
-              product?.shipping_pickup_type === "pickup" ||
-              product?.shipping_pickup_details !== null ||
-              product?.shipping_store_branch_name !== null;
+            // const esRetiroEnLocal =
+            //   product?.shipping_pickup_type === "pickup" ||
+            //   product?.shipping_pickup_details !== null ||
+            //   product?.shipping_store_branch_name !== null;
 
-            if (esRetiroEnLocal) {
-               console.log(`Pedido ${product.id} descartado: Retiro en local`);
-              continue;
-            }
+            // if (esRetiroEnLocal) {
+            //    console.log(`Pedido ${product.id} descartado: Retiro en local`);
+            //   continue;
+            // }
 
             // Si pasa ambos filtros, recién lo guardamos
             const productData = {

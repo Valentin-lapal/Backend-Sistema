@@ -46,7 +46,7 @@ const productsTiendaNube = async () => {
       // console.log("Productos obtenidos:", products);
       // console.log(`Pedidos totales obtenidos de Tienda Nube: ${allProducts.length}`);
       console.log("Pedidos obtenidos:", allProducts.length);
-      
+
       const productsCollection = collection(db, "products");
 
       for (const product of allProducts) {
@@ -97,9 +97,7 @@ const productsTiendaNube = async () => {
             await setDoc(productDocRef, productData);
             console.log(`Producto con ID ${product.id} agregado a Firestore con ID personalizado.`);
         }else{
-            console.log(`Producto con ID ${product.id} ya existe en Firestore.)`
-
-          );
+            console.log(`Producto con ID ${product.id} ya existe en Firestore.`);
         }
       }
 

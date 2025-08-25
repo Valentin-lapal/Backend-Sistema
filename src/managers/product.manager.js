@@ -20,7 +20,7 @@ const productsTiendaNube = async () => {
 
       // 🔄 Paginación para traer todos los pedidos
       while (true) {
-        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders`, {
+        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=200`, {
           method: "GET",
           headers: {
             "Authentication": `bearer ${ACCESS_TOKEN}`,
@@ -43,9 +43,10 @@ const productsTiendaNube = async () => {
 
       }
 
-      console.log("Productos obtenidos:", products);
-      console.log(`Pedidos totales obtenidos de Tienda Nube: ${allProducts.length}`);
-        
+      // console.log("Productos obtenidos:", products);
+      // console.log(`Pedidos totales obtenidos de Tienda Nube: ${allProducts.length}`);
+      console.log("Pedidos obtenidos:", allProducts.length);
+      
       const productsCollection = collection(db, "products");
 
       for (const product of allProducts) {
@@ -102,7 +103,7 @@ const productsTiendaNube = async () => {
         }
       }
 
-      return { message: "Productos sincronizados con Firestore", total: allOrders.length }; 
+      return { message: "Productos sincronizados con Firestore", total: allProducts.length }; 
   } catch (error) {
       console.error("Error sincronizando productos:", error);
       throw error; 

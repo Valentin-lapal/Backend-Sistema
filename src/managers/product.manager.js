@@ -15,11 +15,12 @@ const productsTiendaNube = async () => {
           throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
       }
 
-      let page = 1;
       let allProducts = [];
 
-      // 🔄 Paginación para traer todos los pedidos
-      while (true) {
+      // Paginación para traer todos los pedidos
+      for (let page = 1; page <= 20; page++) {
+        console.log(`Buscando pedidos de página ${page}...`);
+      
         const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=200`, {
           method: "GET",
           headers: {
@@ -29,23 +30,25 @@ const productsTiendaNube = async () => {
         });
 
         if (!response.ok) {
-          throw new Error(`Error en la solicitud: ${response.statusText}`);
+          throw new Error(`Error en la API (página ${page}): ${response.status} - ${errorText}`);
         }
 
         const products = await response.json();
 
-        if (products.length === 0) {
-          break; // ✅ No hay más pedidos
+        if (!products || products.length === 0) {
+          console.log(`No hay más pedidos, se detiene en la página ${page}`);
+          break; 
         }
 
+        console.log(`Página ${page} -> ${products.length} pedidos obtenidos`);
+
         allProducts = allProducts.concat(products);
-        page++;
 
       }
 
       // console.log("Productos obtenidos:", products);
       // console.log(`Pedidos totales obtenidos de Tienda Nube: ${allProducts.length}`);
-      console.log("Pedidos obtenidos:", allProducts.length);
+      console.log(`Total de pedidos obtenidos: ${allProducts.length}`);
 
       const productsCollection = collection(db, "products");
 

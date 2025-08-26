@@ -1,4 +1,4 @@
-const { collection, getDocs, query, where, doc, updateDoc, setDoc } = require("firebase/firestore");
+const { collection, getDocs, doc, updateDoc, setDoc } = require("firebase/firestore");
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
@@ -15,13 +15,14 @@ const productsTiendaNube = async () => {
           throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
       }
 
+      let page = 1;
       let allProducts = [];
 
       // Paginación para traer todos los pedidos
-      for (let page = 1; page <= 20; page++) {
+      while (true) {
         console.log(`Buscando pedidos de página ${page}...`);
       
-        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=200`, {
+        const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=50&status=open`, {
           method: "GET",
           headers: {
             "Authentication": `bearer ${ACCESS_TOKEN}`,
@@ -30,25 +31,22 @@ const productsTiendaNube = async () => {
         });
 
         if (!response.ok) {
-          throw new Error(`Error en la API (página ${page}): ${response.status} - ${errorText}`);
+          throw new Error(`Error en la solicitud: ${response.statusText}`);
         }
 
         const products = await response.json();
 
-        if (!products || products.length === 0) {
+        if (products.length === 0) {
           console.log(`No hay más pedidos, se detiene en la página ${page}`);
           break; 
         }
 
-        console.log(`Página ${page} -> ${products.length} pedidos obtenidos`);
-
         allProducts = allProducts.concat(products);
+        page++;
 
       }
 
-      // console.log("Productos obtenidos:", products);
-      // console.log(`Pedidos totales obtenidos de Tienda Nube: ${allProducts.length}`);
-      console.log(`Total de pedidos obtenidos: ${allProducts.length}`);
+      console.log(`Pedidos obtenidos: ${allProducts.length}`);
 
       const productsCollection = collection(db, "products");
 
@@ -92,22 +90,16 @@ const productsTiendaNube = async () => {
           situacion: "Pendiente",
         };
           
-        const q = query(productsCollection, where("id", "==", product.id));
-        const querySnapshot = await getDocs(q);
+        const productDocRef = doc(productsCollection, product.id.toString());
+        await setDoc(productDocRef, productData, { merge: true });
+        console.log(`Pedido ${product.id} sincronizado en Firestore.`);
 
-        if (querySnapshot.empty){
-            const productDocRef = doc(db, "products", product.id.toString());
-            await setDoc(productDocRef, productData);
-            console.log(`Producto con ID ${product.id} agregado a Firestore con ID personalizado.`);
-        }else{
-            console.log(`Producto con ID ${product.id} ya existe en Firestore.`);
-        }
       }
 
       return { message: "Productos sincronizados con Firestore", total: allProducts.length }; 
   } catch (error) {
-      console.error("Error sincronizando productos:", error);
-      throw error; 
+    console.error("Error sincronizando productos:", error);
+    throw error; 
   }
 };
 

@@ -16,7 +16,7 @@ const productsTiendaNube = async () => {
     }
 
     let page = 1;
-    let allProducts = 0;
+    let allProducts = [];
 
     while (true) {
       console.log(`Buscando pedidos de página ${page}...`);
@@ -35,18 +35,10 @@ const productsTiendaNube = async () => {
 
       const products = await response.json();
 
-      // Aseguramos que sea array
-      if (!Array.isArray(products)) {
-        console.error("La API devolvió un objeto inesperado:", products);
-        break; // cortamos el loop porque la respuesta no es válida
-      }
-
       if (products.length === 0) {
         console.log(`No hay más pedidos, se detiene en la página ${page}`);
         break; 
       }
-
-      // console.log(` Página ${page}: ${products.length} pedidos abiertos encontrados.`);
 
       // Filtrar solo pedidos actuales
       const pedidosFiltrados = products.filter(p =>

@@ -15,13 +15,13 @@ const productsTiendaNube = async () => {
         throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
     }
 
-    // let page = 1;
-    // let totalPedidos = 0;
+    let page = 1;
+    let allProducts = 0;
 
-    // while (true) {
-      // console.log(`Buscando pedidos de página ${page}...`);
+    while (true) {
+      console.log(`Buscando pedidos de página ${page}...`);
     
-      const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders`, {
+      const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=30&status=open`, {
         method: "GET",
         headers: {
           "Authentication": `bearer ${ACCESS_TOKEN}`,
@@ -35,68 +35,76 @@ const productsTiendaNube = async () => {
 
       const products = await response.json();
 
-      // if (products.length === 0) {
-      //   console.log(`No hay más pedidos, se detiene en la página ${page}`);
-      //   break; 
-      // }
-
-      // console.log(` Página ${page}: ${products.length} pedidos abiertos encontrados.`);
-
-      const productsCollection = collection(db, "products");
-
-      for (const product of products) {
-        // const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
-        // // Si la provincia no está en la lista, se descarta
-        // if (!provinciasValidas.includes(product?.billing_province)) {
-        //   console.log(`Pedido ${product.id} descartado: Provincia ${product?.billing_province}`);
-        //   continue;
-        // }
-
-        // Filtramos pedidos que son retiro en local
-        // const esRetiroEnLocal =
-        //   product?.shipping_pickup_type === "pickup" ||
-        //   product?.shipping_pickup_details !== null ||
-        //   product?.shipping_store_branch_name !== null;
-
-        // if (esRetiroEnLocal) {
-        //    console.log(`Pedido ${product.id} descartado: Retiro en local`);
-        //   continue;
-        // }
-
-        // Si pasa ambos filtros, recién lo guardamos
-        const productData = {
-          id: product?.id,
-          orden: product?.number || "",
-          name: product?.contact_name || "",
-          contacto: product?.contact_phone || "",
-          email: product?.contact_email || "",
-          direccion: product?.billing_address || "",
-          numero: product?.billing_number || "",
-          detalle: product?.billing_floor || "",
-          note: product?.note || "",
-          localidad: product?.billing_locality || "",
-          codigo_postal: product?.billing_zipcode || "",
-          ciudad: product?.billing_city || "",
-          provincia: product?.billing_province || "",
-          estado: product?.status || "",
-          estadoshi: product?.shipping_status || "",
-          creacion:product?.created_at || "",
-          situacion: "Pendiente",
-        };
-
-        const productDocRef = doc(productsCollection, product.id.toString());
-        await setDoc(productDocRef, productData, { merge: true });
-        console.log(`Pedido ${product.id} sincronizado en Firestore.`);
-        // totalPedidos++;
+      if (products.length === 0) {
+        console.log(`No hay más pedidos, se detiene en la página ${page}`);
+        break; 
       }
 
-      // page++;
-  
-    // }
+      console.log(` Página ${page}: ${products.length} pedidos abiertos encontrados.`);
 
-    // console.log(`Total de pedidos sincronizados: ${totalPedidos}`);
+      // Filtrar solo pedidos actuales
+      const pedidosFiltrados = products.filter(p =>
+        p.status === "open" &&
+        (p.shipping_status === "unpacked" || p.shipping_status === "unshipped")
+      );
 
-    return { message: "Productos sincronizados con Firestore", products }; 
+      allProducts = allProducts.concat(pedidosFiltrados);
+      page++;
+
+    }
+
+    console.log(`Pedidos actuales obtenidos: ${allProducts.length}`);
+
+    const productsCollection = collection(db, "products");
+
+    for (const product of allProducts) {
+      // const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
+      // // Si la provincia no está en la lista, se descarta
+      // if (!provinciasValidas.includes(product?.billing_province)) {
+      //   console.log(`Pedido ${product.id} descartado: Provincia ${product?.billing_province}`);
+      //   continue;
+      // }
+
+      // Filtramos pedidos que son retiro en local
+      // const esRetiroEnLocal =
+      //   product?.shipping_pickup_type === "pickup" ||
+      //   product?.shipping_pickup_details !== null ||
+      //   product?.shipping_store_branch_name !== null;
+
+      // if (esRetiroEnLocal) {
+      //    console.log(`Pedido ${product.id} descartado: Retiro en local`);
+      //   continue;
+      // }
+
+      // Si pasa ambos filtros, recién lo guardamos
+      const productData = {
+        id: product?.id,
+        orden: product?.number || "",
+        name: product?.contact_name || "",
+        contacto: product?.contact_phone || "",
+        email: product?.contact_email || "",
+        direccion: product?.billing_address || "",
+        numero: product?.billing_number || "",
+        detalle: product?.billing_floor || "",
+        note: product?.note || "",
+        localidad: product?.billing_locality || "",
+        codigo_postal: product?.billing_zipcode || "",
+        ciudad: product?.billing_city || "",
+        provincia: product?.billing_province || "",
+        estado: product?.status || "",
+        estadoshi: product?.shipping_status || "",
+        creacion:product?.created_at || "",
+        situacion: "Pendiente",
+      };
+
+      const productDocRef = doc(productsCollection, product.id.toString());
+      await setDoc(productDocRef, productData, { merge: true });
+      console.log(`Pedido ${product.id} sincronizado en Firestore.`);
+      
+    }
+    
+
+    return { message: "Productos sincronizados con Firestore", total: allProducts.length }; 
   } catch (error) {
     console.error("Error sincronizando productos:", error);
     throw error; 

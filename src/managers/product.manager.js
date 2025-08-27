@@ -15,13 +15,13 @@ const productsTiendaNube = async () => {
         throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
     }
 
-    let page = 1;
-    let totalPedidos = 0;
+    // let page = 1;
+    // let totalPedidos = 0;
 
-    while (true) {
-      console.log(`Buscando pedidos de página ${page}...`);
+    // while (true) {
+      // console.log(`Buscando pedidos de página ${page}...`);
     
-      const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=50&status=open`, {
+      const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders`, {
         method: "GET",
         headers: {
           "Authentication": `bearer ${ACCESS_TOKEN}`,
@@ -35,12 +35,12 @@ const productsTiendaNube = async () => {
 
       const products = await response.json();
 
-      if (products.length === 0) {
-        console.log(`No hay más pedidos, se detiene en la página ${page}`);
-        break; 
-      }
+      // if (products.length === 0) {
+      //   console.log(`No hay más pedidos, se detiene en la página ${page}`);
+      //   break; 
+      // }
 
-      console.log(`📄 Página ${page}: ${products.length} pedidos abiertos encontrados.`);
+      // console.log(` Página ${page}: ${products.length} pedidos abiertos encontrados.`);
 
       const productsCollection = collection(db, "products");
 
@@ -87,14 +87,14 @@ const productsTiendaNube = async () => {
         const productDocRef = doc(productsCollection, product.id.toString());
         await setDoc(productDocRef, productData, { merge: true });
         console.log(`Pedido ${product.id} sincronizado en Firestore.`);
-        totalPedidos++;
+        // totalPedidos++;
       }
 
-      page++;
+      // page++;
   
-    }
+    // }
 
-    console.log(`Total de pedidos sincronizados: ${totalPedidos}`);
+    // console.log(`Total de pedidos sincronizados: ${totalPedidos}`);
 
     return { message: "Productos sincronizados con Firestore", total: totalPedidos }; 
   } catch (error) {

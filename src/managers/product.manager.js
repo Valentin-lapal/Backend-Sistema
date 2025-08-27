@@ -21,7 +21,7 @@ const productsTiendaNube = async () => {
     // while (true) {
       // console.log(`Buscando pedidos de página ${page}...`);
     
-      const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders`, {
+      const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders.json`, {
         method: "GET",
         headers: {
           "Authentication": `bearer ${ACCESS_TOKEN}`,

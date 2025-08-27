@@ -47,9 +47,9 @@ const productsTiendaNube = async () => {
         (p.shipping_status === "unpacked" || p.shipping_status === "unshipped")
       );
 
-      console.log(`Página ${page}: ${pedidosValidos.length} pedidos válidos encontrados.`);
+      console.log(`Página ${page}: ${pedidosFiltrados.length} pedidos válidos encontrados.`);
 
-      if (pedidosValidos.length === 0 && products.length < 30) {
+      if (pedidosFiltrados.length === 0 && products.length < 30) {
         console.log(`No hay más pedidos válidos a partir de página ${page}, deteniendo loop.`);
         break;
       }

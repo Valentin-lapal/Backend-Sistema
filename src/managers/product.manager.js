@@ -17,8 +17,9 @@ const productsTiendaNube = async () => {
 
     let page = 1;
     let allProducts = [];
+    const MAX_PAGES = 10; // límite de seguridad para evitar loops infinitos
 
-    while (true) {
+    while (page <= MAX_PAGES) {
       console.log(`Buscando pedidos de página ${page}...`);
     
       const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=30&status=open`, {
@@ -46,7 +47,20 @@ const productsTiendaNube = async () => {
         (p.shipping_status === "unpacked" || p.shipping_status === "unshipped")
       );
 
+      console.log(`Página ${page}: ${pedidosValidos.length} pedidos válidos encontrados.`);
+
+      if (pedidosValidos.length === 0 && products.length < 30) {
+        console.log(`No hay más pedidos válidos a partir de página ${page}, deteniendo loop.`);
+        break;
+      }
+
       allProducts = allProducts.concat(pedidosFiltrados);
+
+      if (products.length < 30) {
+        console.log(`Se obtuvo menos de 30 pedidos en página ${page}, fin de la búsqueda.`);
+        break;
+      };
+      
       page++;
 
     }

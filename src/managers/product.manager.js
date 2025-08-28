@@ -48,7 +48,7 @@ const productsTiendaNube = async () => {
       );
 
       const fechaLimite = new Date();
-      fechaLimite.setDate(fechaLimite.getDate() - 7);
+      fechaLimite.setDate(fechaLimite.getDate() - 4);
       const pedidosRecientes = pedidosFiltrados.filter(
         (p) => new Date(p.created_at) >= fechaLimite
       );

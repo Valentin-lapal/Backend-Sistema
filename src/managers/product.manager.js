@@ -116,7 +116,7 @@ const productsTiendaNube = async () => {
     }
     
 
-    return { message: "Productos sincronizados con Firestore", total: allProducts.length }; 
+    return { message: "Productos sincronizados con Firestore", total: allProducts.length, Pedidos: allProducts }; 
   } catch (error) {
     console.error("Error sincronizando productos:", error);
     throw error; 

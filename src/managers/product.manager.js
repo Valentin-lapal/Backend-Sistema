@@ -76,23 +76,23 @@ const productsTiendaNube = async () => {
     const productsCollection = collection(db, "products");
 
     for (const product of allProducts) {
-      // const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
-      // // Si la provincia no está en la lista, se descarta
-      // if (!provinciasValidas.includes(product?.billing_province)) {
-      //   console.log(`Pedido ${product.id} descartado: Provincia ${product?.billing_province}`);
-      //   continue;
-      // }
+      const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
+      // Si la provincia no está en la lista, se descarta
+      if (!provinciasValidas.map(p => p.toLowerCase()).includes((product?.billing_province || "").toLowerCase())) {
+        console.log(`Pedido ${product.id} descartado: Provincia ${product?.billing_province}`);
+        continue;
+      }
 
       // Filtramos pedidos que son retiro en local
-      // const esRetiroEnLocal =
-      //   product?.shipping_pickup_type === "pickup" ||
-      //   product?.shipping_pickup_details !== null ||
-      //   product?.shipping_store_branch_name !== null;
+      const esRetiroEnLocal =
+        product?.shipping_pickup_type === "pickup" ||
+        !!product?.shipping_pickup_details ||
+        !!product?.shipping_store_branch_name;
 
-      // if (esRetiroEnLocal) {
-      //    console.log(`Pedido ${product.id} descartado: Retiro en local`);
-      //   continue;
-      // }
+      if (esRetiroEnLocal) {
+         console.log(`Pedido ${product.id} descartado: Retiro en local`);
+         continue;
+      }
 
       // Si pasa ambos filtros, recién lo guardamos
       const productData = {

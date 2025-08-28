@@ -47,14 +47,20 @@ const productsTiendaNube = async () => {
         (p.shipping_status === "unpacked" || p.shipping_status === "unshipped")
       );
 
-      console.log(`Página ${page}: ${pedidosFiltrados.length} pedidos válidos encontrados.`);
+      const fechaLimite = new Date();
+      fechaLimite.setDate(fechaLimite.getDate() - 7);
+      const pedidosRecientes = pedidosFiltrados.filter(
+        (p) => new Date(p.created_at) >= fechaLimite
+      );
 
-      if (pedidosFiltrados.length === 0 && products.length < 30) {
+      console.log(`Página ${page}: ${pedidosRecientes.length} pedidos válidos encontrados.`);
+
+      if (pedidosRecientes.length === 0 && products.length < 30) {
         console.log(`No hay más pedidos válidos a partir de página ${page}, deteniendo loop.`);
         break;
       }
 
-      allProducts = allProducts.concat(pedidosFiltrados);
+      allProducts = allProducts.concat(pedidosRecientes);
 
       if (products.length < 30) {
         console.log(`Se obtuvo menos de 30 pedidos en página ${page}, fin de la búsqueda.`);
@@ -115,7 +121,6 @@ const productsTiendaNube = async () => {
       
     }
     
-
     return { message: "Productos sincronizados con Firestore", total: allProducts.length, Pedidos: allProducts }; 
   } catch (error) {
     console.error("Error sincronizando productos:", error);

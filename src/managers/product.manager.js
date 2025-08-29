@@ -49,6 +49,7 @@ const productsTiendaNube = async () => {
 
       const fechaLimite = new Date();
       fechaLimite.setDate(fechaLimite.getDate() - 4);
+
       const pedidosRecientes = pedidosFiltrados.filter(
         (p) => new Date(p.created_at) >= fechaLimite
       );
@@ -73,13 +74,20 @@ const productsTiendaNube = async () => {
 
     console.log(`Pedidos actuales obtenidos: ${allProducts.length}`);
 
+    const pedidosFinales = [];
+    let descartadosProvincia = 0;
+    let descartadosRetiroLocal = 0;
+
     const productsCollection = collection(db, "products");
 
+    const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
+
     for (const product of allProducts) {
-      const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
+      
       // Si la provincia no está en la lista, se descarta
       if (!provinciasValidas.map(p => p.toLowerCase()).includes((product?.billing_province || "").toLowerCase())) {
         console.log(`Pedido ${product.id} descartado: Provincia ${product?.billing_province}`);
+        descartadosProvincia++;
         continue;
       }
 
@@ -91,6 +99,7 @@ const productsTiendaNube = async () => {
 
       if (esRetiroEnLocal) {
          console.log(`Pedido ${product.id} descartado: Retiro en local`);
+         descartadosRetiroLocal++;
          continue;
       }
 
@@ -115,13 +124,25 @@ const productsTiendaNube = async () => {
         situacion: "Pendiente",
       };
 
+      pedidosFinales.push(productData);
+
       const productDocRef = doc(productsCollection, product.id.toString());
       await setDoc(productDocRef, productData, { merge: true });
       console.log(`Pedido ${product.id} sincronizado en Firestore.`);
+
+      console.log("------ RESUMEN DE FILTROS ------");
+      console.log(`Pedidos totales obtenidos: ${allProducts.length}`);
+      console.log(`Pedidos descartados por provincia: ${descartadosProvincia}`);
+      console.log(`Pedidos descartados por retiro en local: ${descartadosRetiroLocal}`);
+      console.log(`Pedidos finales sincronizados en sistema: ${pedidosFinales.length}`);
       
     }
     
-    return { message: "Productos sincronizados con Firestore", total: allProducts.length, Pedidos: allProducts }; 
+    return { message: "Productos sincronizados con Firestore",
+       total: allProducts.length,
+       totalSistema: pedidosFinales.length,
+       pedidos: pedidosFinales
+      }; 
   } catch (error) {
     console.error("Error sincronizando productos:", error);
     throw error; 

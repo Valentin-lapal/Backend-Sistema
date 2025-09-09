@@ -77,6 +77,7 @@ const productsTiendaNube = async () => {
     const pedidosFinales = [];
     let descartadosProvincia = 0;
     let descartadosRetiroLocal = 0;
+    let descartadosCP = 0; 
 
     const productsCollection = collection(db, "products");
 
@@ -101,6 +102,13 @@ const productsTiendaNube = async () => {
          console.log(`Pedido ${product.id} descartado: Retiro en local`);
          descartadosRetiroLocal++;
          continue;
+      }
+
+      const cp = parseInt(product?.billing_zipcode, 10);
+      if (isNaN(cp) || cp < 1 || cp >= 1900) {
+        console.log(`[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`);
+        descartadosCP++;
+        continue;
       }
 
       // Si pasa ambos filtros, recién lo guardamos
@@ -134,6 +142,7 @@ const productsTiendaNube = async () => {
       console.log(`Pedidos totales obtenidos: ${allProducts.length}`);
       console.log(`Pedidos descartados por provincia: ${descartadosProvincia}`);
       console.log(`Pedidos descartados por retiro en local: ${descartadosRetiroLocal}`);
+      console.log(`Pedidos descartados por código postal: ${descartadosCP}`);
       console.log(`Pedidos finales sincronizados en sistema: ${pedidosFinales.length}`);
       
     }

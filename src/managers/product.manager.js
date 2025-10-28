@@ -104,12 +104,12 @@ const productsTiendaNube = async () => {
          continue;
       }
 
-      const cp = parseInt(product?.billing_zipcode, 10);
-      if (isNaN(cp) || cp < 1 || cp > 1900) {
-        console.log(`[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`);
-        descartadosCP++;
-        continue;
-      }
+      // const cp = parseInt(product?.billing_zipcode, 10);
+      // if (isNaN(cp) || cp < 1 || cp > 1900) {
+      //   console.log(`[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`);
+      //   descartadosCP++;
+      //   continue;
+      // }
 
       // Si pasa ambos filtros, recién lo guardamos
       const productData = {

@@ -149,6 +149,9 @@ const productsTiendaNube = async () => {
     
     return { message: "Productos sincronizados con Firestore",
        total: allProducts.length,
+       descartadosDeprovincia: descartadosProvincia,
+       descartadosDeretiroLocal: descartadosRetiroLocal,
+       descartadosDeCp: descartadosCP,
        totalSistema: pedidosFinales.length,
        pedidos: pedidosFinales
       }; 

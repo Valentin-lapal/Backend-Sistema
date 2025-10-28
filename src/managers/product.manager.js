@@ -104,13 +104,15 @@ const productsTiendaNube = async () => {
          continue;
       }
 
-      // 
+      // FUNCION PARA FILTRAR POR CP PARA QUE NO TOME LOS DEL INTERIOR DE PROVINCIA DE BUENOS AIRES
+
       const cp = parseInt(product?.billing_zipcode, 10);
-      // if (isNaN(cp) || cp < 1 || cp > 1900) {
-      //   console.log(`[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`);
-      //   descartadosCP++;
-      //   continue;
-      // }
+      if (isNaN(cp) || ((cp < 1 || cp > 1999) && cp !== 6700)) {
+        console.log(`[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`);
+        descartadosCP++;
+        continue;
+      }
+
 
       // Si pasa ambos filtros, recién lo guardamos
       const productData = {

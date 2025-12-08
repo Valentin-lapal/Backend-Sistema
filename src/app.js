@@ -6,7 +6,11 @@ const app = express();
 require("dotenv").config();
 
 
-const allowedOrigins = ["https://lavsoft.online", "https://sistema.liverval.com.ar"];
+const allowedOrigins = [
+    "https://lavsoft.online",
+    "https://sistema.liverval.com.ar",
+     // "http://localhost:5173", // <- descomentar para pruebas locales
+    ];
 
 app.use(cors({
     origin: function (origin, callback) {

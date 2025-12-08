@@ -1,26 +1,61 @@
-const { collection, getDocs, doc, updateDoc, setDoc } = require("firebase/firestore");
+const { collection, getDocs, doc, updateDoc, setDoc, query, where, } = require("firebase/firestore");
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
 
 
-const productsTiendaNube = async () => {
-  try {
+/**
+ * Configuración por cliente.
+ * Podés ir agregando más entradas a este objeto.
+ */
+const CLIENTS_CONFIG = {
+  praga: {
+    ID_TIENDA: process.env.PRAGA_ID_TIENDA,
+    ACCESS_TOKEN: process.env.PRAGA_ACCESS_TOKEN,
+    USER_AGENT: process.env.PRAGA_USER_AGENT,
+  },
+  chessi: {
+    ID_TIENDA: process.env.CHESSI_ID_TIENDA,
+    ACCESS_TOKEN: process.env.CHESSI_ACCESS_TOKEN,
+    USER_AGENT: process.env.CHESSI_USER_AGENT,
+  },
+};
 
-    const ID_TIENDA = process.env.ID_TIENDA;
-    const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-    const USER_AGENT = process.env.USER_AGENT;
+const getClientConfig = (clientId) => {
+  const config = CLIENTS_CONFIG[clientId];
+  if (!config) {
+    throw new Error(`Cliente no configurado: ${clientId}`);
+  }
+
+  const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT } = config;
+
+  if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
+    throw new Error(
+      `Faltan variables de entorno para el cliente ${clientId} (ID_TIENDA / ACCESS_TOKEN / USER_AGENT)`
+    );
+  }
+
+  return config;
+};
+
+const productsTiendaNube = async (clientId) => {
+  try {
+    const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT } = getClientConfig(clientId);
+
+    // const ID_TIENDA = process.env.ID_TIENDA;
+    // const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
+    // const USER_AGENT = process.env.USER_AGENT;
       
-    if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
-        throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
-    }
+    // if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
+    //     throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
+    // }
 
     let page = 1;
     let allProducts = [];
     const MAX_PAGES = 10; // límite de seguridad para evitar loops infinitos
 
     while (page <= MAX_PAGES) {
-      console.log(`Buscando pedidos de página ${page}...`);
+      console.log(`Buscando pedidos de página ${page} para cliente ${clientId}...`);
     
       const response = await fetch(`https://api.tiendanube.com/v1/${ID_TIENDA}/orders?page=${page}&per_page=30&status=open`, {
         method: "GET",
@@ -48,7 +83,7 @@ const productsTiendaNube = async () => {
       );
 
       const fechaLimite = new Date();
-      fechaLimite.setDate(fechaLimite.getDate() - 4);
+      fechaLimite.setDate(fechaLimite.getDate() - 5);
 
       const pedidosRecientes = pedidosFiltrados.filter(
         (p) => new Date(p.created_at) >= fechaLimite
@@ -72,7 +107,9 @@ const productsTiendaNube = async () => {
 
     }
 
-    console.log(`Pedidos actuales obtenidos: ${allProducts.length}`);
+    console.log(
+      `Pedidos obtenidos para cliente ${clientId}: ${allProducts.length}`
+    );
 
     const pedidosFinales = [];
     let descartadosProvincia = 0;
@@ -81,7 +118,11 @@ const productsTiendaNube = async () => {
 
     const productsCollection = collection(db, "products");
 
-    const provinciasValidas = ["Buenos Aires", "Capital Federal", "Ciudad de Buenos Aires"];
+    const provinciasValidas = [
+      "Buenos Aires",
+      "Capital Federal", 
+      "Ciudad de Buenos Aires"
+    ];
 
     for (const product of allProducts) {
       
@@ -107,8 +148,10 @@ const productsTiendaNube = async () => {
       // FUNCION PARA FILTRAR POR CP PARA QUE NO TOME LOS DEL INTERIOR DE PROVINCIA DE BUENOS AIRES
 
       const cp = parseInt(product?.billing_zipcode, 10);
-      if (isNaN(cp) || ((cp < 1 || cp > 1999) && cp !== 6700)) {
-        console.log(`[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`);
+      if (isNaN(cp) || ((cp < 1 || cp > 1999) && cp !== 6700 && cp !== 2804)) {
+        console.log(
+          `[Filtro Código Postal] Pedido ${product.id} descartado: CP ${product?.billing_zipcode}`
+        );
         descartadosCP++;
         continue;
       }
@@ -117,6 +160,7 @@ const productsTiendaNube = async () => {
       // Si pasa ambos filtros, recién lo guardamos
       const productData = {
         id: product?.id,
+        clientId,
         orden: product?.number || "",
         name: product?.contact_name || "",
         contacto: product?.contact_phone || "",
@@ -137,9 +181,11 @@ const productsTiendaNube = async () => {
 
       pedidosFinales.push(productData);
 
-      const productDocRef = doc(productsCollection, product.id.toString());
+      const docId = `${clientId}_${product.id}`;
+      const productDocRef = doc(productsCollection, docId);
+      // const productDocRef = doc(productsCollection, product.id.toString());
       await setDoc(productDocRef, productData, { merge: true });
-      console.log(`Pedido ${product.id} sincronizado en Firestore.`);
+      console.log(`Pedido ${product.id} (${clientId}) sincronizado en Firestore.`);
 
       console.log("------ RESUMEN DE FILTROS ------");
       console.log(`Pedidos totales obtenidos: ${allProducts.length}`);
@@ -151,6 +197,7 @@ const productsTiendaNube = async () => {
     }
     
     return { message: "Productos sincronizados con Firestore",
+       clientId,
        total: allProducts.length,
        descartadosDeprovincia: descartadosProvincia,
        descartadosDeretiroLocal: descartadosRetiroLocal,
@@ -166,11 +213,20 @@ const productsTiendaNube = async () => {
 
 
 
-const getAllProducts = async () => {
+const getAllProducts = async (clientId = null) => {
     try {
       const productsCollection = collection(db, "products");
-      const productsAlmacenados = await getDocs(productsCollection);
-      const products = productsAlmacenados.docs.map(doc => ({ id: doc.id,...doc.data() }));
+      let q;
+      if (clientId) {
+        q = query(productsCollection, where("clientId", "==", clientId));
+      } else {
+        q = productsCollection; // todos los clientes
+      }
+      const productsAlmacenados = await getDocs(q);
+      const products = productsAlmacenados.docs.map((docSnap) => ({
+      id: docSnap.id, // id del documento Firestore (ej: "praga_1828...")
+      ...docSnap.data(),
+    }));
       return products;
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -179,26 +235,121 @@ const getAllProducts = async () => {
 };
 
 
+/**
+ * Historial por rango de fechas (solo pedidos entregados).
+ * from / to: strings YYYY-MM-DD (inclusive)
+ */
+
+const getHistoryByRange = async ({ clientId = null, from, to }) => {
+  try {
+    const productsCollection = collection(db, "products");
+
+    const fromDate = `${from}T00:00:00`;
+    const toDate = `${to}T23:59:59`;
+
+    let constraints = [
+      where("situacion", "==", "Entregado"),
+      where("entregadoEn", ">=", fromDate),
+      where("entregadoEn", "<=", toDate),
+    ];
+
+    if (clientId) {
+      constraints.push(where("clientId", "==", clientId));
+    }
+
+    const q = query(productsCollection, ...constraints);
+    const snapshot = await getDocs(q);
+
+    const orders = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    }));
+
+    // Agrupamos por día (YYYY-MM-DD)
+    const historyByDay = {};
+
+    for (const order of orders) {
+      const baseFecha = order.entregadoEn || order.creacion || "";
+      const dateKey = baseFecha.slice(0, 10); // YYYY-MM-DD
+      if (!dateKey) continue;
+
+      if (!historyByDay[dateKey]) {
+        historyByDay[dateKey] = [];
+      }
+      historyByDay[dateKey].push(order);
+    }
+
+    return {
+      clientId: clientId || "all",
+      from,
+      to,
+      days: historyByDay,
+      total: orders.length,
+    };
+  } catch (error) {
+    console.error("Error al obtener historial:", error);
+    throw error;
+  }
+};
+
 
 const updateSituacion = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // id del DOCUMENTO Firestore (ej: "praga_1828...")
   const { situacion } = req.body;
 
   if (!situacion) {
-    return res.status(400).json({ message: "El campo 'situacion' es requerido." });
+    return res.status(400).json({ error: "El campo 'situacion' es obligatorio" });
   }
 
   try {
-    const productRef = doc(db, "products", id);
-    await updateDoc(productRef, { situacion });
+    const productsCollection = collection(db, "products");
+    const productDocRef = doc(productsCollection, id);
 
-    res.status(200).json({ message: "Situación actualizada correctamente." });
+    const updateData = { situacion };
+
+    // Si se marca como Entregado, guardamos fecha de entrega permanente
+    if (situacion === "Entregado") {
+      const ahora = new Date().toISOString();
+      updateData.entregadoEn = ahora;
+    }
+
+    await updateDoc(productDocRef, updateData);
+
+    console.log(`Situacion del pedido ${id} actualizada a ${situacion}`);
+    res.json({
+      message: "Situacion actualizada correctamente",
+      id,
+      situacion,
+    });
   } catch (error) {
-    console.error("Error al actualizar situación:", error);
-    res.status(500).json({ message: "Error al actualizar situación." });
+    console.error("Error al actualizar situacion:", error);
+    res.status(500).json({ error: "Error al actualizar la situacion" });
   }
 };
 
 
 
-module.exports = { getAllProducts, productsTiendaNube, updateSituacion };
+
+
+// const updateSituacion = async (req, res) => {
+//   const { id } = req.params;
+//   const { situacion } = req.body;
+
+//   if (!situacion) {
+//     return res.status(400).json({ message: "El campo 'situacion' es requerido." });
+//   }
+
+//   try {
+//     const productRef = doc(db, "products", id);
+//     await updateDoc(productRef, { situacion });
+
+//     res.status(200).json({ message: "Situación actualizada correctamente." });
+//   } catch (error) {
+//     console.error("Error al actualizar situación:", error);
+//     res.status(500).json({ message: "Error al actualizar situación." });
+//   }
+// };
+
+
+
+module.exports = { getAllProducts, productsTiendaNube, updateSituacion, getHistoryByRange };

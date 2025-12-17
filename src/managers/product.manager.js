@@ -140,9 +140,9 @@ const productsTiendaNube = async (clientId) => {
         !!product?.shipping_store_branch_name;
 
       if (esRetiroEnLocal) {
-         console.log(`Pedido ${product.id} descartado: Retiro en local`);
-         descartadosRetiroLocal++;
-         continue;
+        console.log(`Pedido ${product.id} descartado: Retiro en local`);
+        descartadosRetiroLocal++;
+        continue;
       }
 
       // FUNCION PARA FILTRAR POR CP PARA QUE NO TOME LOS DEL INTERIOR DE PROVINCIA DE BUENOS AIRES
@@ -159,7 +159,7 @@ const productsTiendaNube = async (clientId) => {
 
       // Si pasa ambos filtros, recién lo guardamos
       const productData = {
-        id: product?.id,
+        tnId: product?.id,
         clientId,
         orden: product?.number || "",
         name: product?.contact_name || "",
@@ -224,7 +224,7 @@ const getAllProducts = async (clientId = null) => {
       }
       const productsAlmacenados = await getDocs(q);
       const products = productsAlmacenados.docs.map((docSnap) => ({
-      id: docSnap.id, // id del documento Firestore (ej: "praga_1828...")
+      docId: docSnap.id, // 🔑 ID Firestore (usar para PUT)
       ...docSnap.data(),
     }));
       return products;

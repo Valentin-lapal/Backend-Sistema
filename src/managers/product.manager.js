@@ -227,7 +227,10 @@ const getAllProducts = async (clientId = null) => {
       docId: docSnap.id, // 🔑 ID Firestore (usar para PUT)
       ...docSnap.data(),
     }));
-      return products;
+
+    console.log("getAllProducts → primer producto:", products[0]);
+    
+    return products;
     } catch (error) {
       console.error("Error al obtener productos:", error);
       throw error; 

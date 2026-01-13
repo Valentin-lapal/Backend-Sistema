@@ -23,6 +23,7 @@ const CLIENTS_CONFIG = {
 
 const getClientConfig = (clientId) => {
   const config = CLIENTS_CONFIG[clientId];
+
   if (!config) {
     throw new Error(`Cliente no configurado: ${clientId}`);
   }
@@ -41,14 +42,6 @@ const getClientConfig = (clientId) => {
 const productsTiendaNube = async (clientId) => {
   try {
     const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT } = getClientConfig(clientId);
-
-    // const ID_TIENDA = process.env.ID_TIENDA;
-    // const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-    // const USER_AGENT = process.env.USER_AGENT;
-      
-    // if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
-    //     throw new Error("Faltan variables de entorno necesarias para la API de Tienda Nube.");
-    // }
 
     let page = 1;
     let allProducts = [];
@@ -83,7 +76,7 @@ const productsTiendaNube = async (clientId) => {
       );
 
       const fechaLimite = new Date();
-      fechaLimite.setDate(fechaLimite.getDate() - 5);
+      fechaLimite.setDate(fechaLimite.getDate() - 7);
 
       const pedidosRecientes = pedidosFiltrados.filter(
         (p) => new Date(p.created_at) >= fechaLimite

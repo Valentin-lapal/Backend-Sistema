@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { productsTiendaNube } = require("../managers/products.manager");
+const { productsTiendaNube } = require("../managers/product.manager");
 
 // 🔁 Clientes a sincronizar automáticamente
 const CLIENTES = ["praga", "chessi"];

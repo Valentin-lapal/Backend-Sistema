@@ -3,6 +3,8 @@ const cors = require("cors");
 const routes = require("./routes");
 const app = express();
 
+const { iniciarCronSync } = require("./cron/syncPedidos");
+
 require("dotenv").config();
 
 
@@ -35,6 +37,9 @@ app.use("/api", routes);
 app.get("/", (req, res) => {
     res.send("Bienvenido a la API de Sistema");
 });
+
+
+iniciarCronSync();
 
 const PORT = process.env.PORT || 5000;
 

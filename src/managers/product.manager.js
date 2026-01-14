@@ -1,4 +1,4 @@
-const { collection, getDocs, doc, updateDoc, setDoc, query, where, } = require("firebase/firestore");
+const { collection, getDocs, getDoc, doc, updateDoc, setDoc, query, where, } = require("firebase/firestore");
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
@@ -118,6 +118,12 @@ const productsTiendaNube = async (clientId) => {
     ];
 
     for (const product of allProducts) {
+
+      const docId = `${clientId}_${product.id}`;
+      const productDocRef = doc(productsCollection, docId);
+
+      const docSnapshot = await getDoc(productDocRef);
+      const existePedido = docSnapshot.exists();
       
       // Si la provincia no está en la lista, se descarta
       if (!provinciasValidas.map(p => p.toLowerCase()).includes((product?.billing_province || "").toLowerCase())) {
@@ -169,15 +175,21 @@ const productsTiendaNube = async (clientId) => {
         estado: product?.status || "",
         estadoshi: product?.shipping_status || "",
         creacion:product?.created_at || "",
-        situacion: "Pendiente",
+        // situacion: "Pendiente",
       };
+
+      if (!existePedido) {
+        productData.situacion = "Pendiente";
+      }
+
+      await setDoc(productDocRef, productData, { merge: true });
 
       pedidosFinales.push(productData);
 
-      const docId = `${clientId}_${product.id}`;
-      const productDocRef = doc(productsCollection, docId);
+      // const docId = `${clientId}_${product.id}`;
+      // const productDocRef = doc(productsCollection, docId);
       // const productDocRef = doc(productsCollection, product.id.toString());
-      await setDoc(productDocRef, productData, { merge: true });
+      // await setDoc(productDocRef, productData, { merge: true });
       console.log(`Pedido ${product.id} (${clientId}) sincronizado en Firestore.`);
 
       console.log("------ RESUMEN DE FILTROS ------");

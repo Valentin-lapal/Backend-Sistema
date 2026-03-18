@@ -4,22 +4,49 @@ const fetch = require("node-fetch");
 require('dotenv').config();
 
 
+const getClientConfig = async (clientId) => {
+
+  const clientRef = doc(db, "clients", clientId);
+  const clientSnap = await getDoc(clientRef);
+
+  if (!clientSnap.exists()) {
+    throw new Error(`Cliente no encontrado en Firestore: ${clientId}`);
+  }
+
+  const data = clientSnap.data();
+
+  const { store_id, access_token, user_agent } = data;
+
+  if (!store_id || !access_token) {
+    throw new Error(`Configuración incompleta para cliente ${clientId}`);
+  }
+
+  return {
+    ID_TIENDA: store_id,
+    ACCESS_TOKEN: access_token,
+    USER_AGENT: user_agent,
+    STORE_NAME: data.store_name
+  };
+};
+
+
+
+
 /**
  * Configuración por cliente.
  * Podés ir agregando más entradas a este objeto.
- */
+ 
 const CLIENTS_CONFIG = {
   praga: {
     ID_TIENDA: process.env.PRAGA_ID_TIENDA,
     ACCESS_TOKEN: process.env.PRAGA_ACCESS_TOKEN,
-    USER_AGENT: process.env.PRAGA_USER_AGENT,
   },
   chessi: {
     ID_TIENDA: process.env.CHESSI_ID_TIENDA,
     ACCESS_TOKEN: process.env.CHESSI_ACCESS_TOKEN,
-    USER_AGENT: process.env.CHESSI_USER_AGENT,
   },
 };
+
 
 const getClientConfig = (clientId) => {
   const config = CLIENTS_CONFIG[clientId];
@@ -28,9 +55,9 @@ const getClientConfig = (clientId) => {
     throw new Error(`Cliente no configurado: ${clientId}`);
   }
 
-  const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT } = config;
+  const { ID_TIENDA, ACCESS_TOKEN } = getClientConfig(clientId);
 
-  if (!ID_TIENDA || !ACCESS_TOKEN || !USER_AGENT) {
+  if (!ID_TIENDA || !ACCESS_TOKEN ) {
     throw new Error(
       `Faltan variables de entorno para el cliente ${clientId} (ID_TIENDA / ACCESS_TOKEN / USER_AGENT)`
     );
@@ -38,10 +65,11 @@ const getClientConfig = (clientId) => {
 
   return config;
 };
+*/
 
 const productsTiendaNube = async (clientId) => {
   try {
-    const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT } = getClientConfig(clientId);
+    const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT, STORE_NAME } = await getClientConfig(clientId);
 
     let page = 1;
     let allProducts = [];
@@ -54,7 +82,7 @@ const productsTiendaNube = async (clientId) => {
         method: "GET",
         headers: {
           "Authentication": `bearer ${ACCESS_TOKEN}`,
-          "User-Agent": `${USER_AGENT}`
+          "User-Agent": USER_AGENT
         } 
       });
 
@@ -160,6 +188,7 @@ const productsTiendaNube = async (clientId) => {
       const productData = {
         tnId: product?.id,
         clientId,
+        store_name: STORE_NAME,
         orden: product?.number || "",
         name: product?.contact_name || "",
         contacto: product?.contact_phone || "",

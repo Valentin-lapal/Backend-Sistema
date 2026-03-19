@@ -31,42 +31,6 @@ const getClientConfig = async (clientId) => {
 
 
 
-
-/**
- * Configuración por cliente.
- * Podés ir agregando más entradas a este objeto.
- 
-const CLIENTS_CONFIG = {
-  praga: {
-    ID_TIENDA: process.env.PRAGA_ID_TIENDA,
-    ACCESS_TOKEN: process.env.PRAGA_ACCESS_TOKEN,
-  },
-  chessi: {
-    ID_TIENDA: process.env.CHESSI_ID_TIENDA,
-    ACCESS_TOKEN: process.env.CHESSI_ACCESS_TOKEN,
-  },
-};
-
-
-const getClientConfig = (clientId) => {
-  const config = CLIENTS_CONFIG[clientId];
-
-  if (!config) {
-    throw new Error(`Cliente no configurado: ${clientId}`);
-  }
-
-  const { ID_TIENDA, ACCESS_TOKEN } = getClientConfig(clientId);
-
-  if (!ID_TIENDA || !ACCESS_TOKEN ) {
-    throw new Error(
-      `Faltan variables de entorno para el cliente ${clientId} (ID_TIENDA / ACCESS_TOKEN / USER_AGENT)`
-    );
-  }
-
-  return config;
-};
-*/
-
 const productsTiendaNube = async (clientId) => {
   try {
     const { ID_TIENDA, ACCESS_TOKEN, USER_AGENT, STORE_NAME } = await getClientConfig(clientId);
@@ -188,7 +152,7 @@ const productsTiendaNube = async (clientId) => {
       const productData = {
         tnId: product?.id,
         clientId,
-        store_name: STORE_NAME,
+        store_name: STORE_NAME || "",
         orden: product?.number || "",
         name: product?.contact_name || "",
         contacto: product?.contact_phone || "",
@@ -215,10 +179,6 @@ const productsTiendaNube = async (clientId) => {
 
       pedidosFinales.push(productData);
 
-      // const docId = `${clientId}_${product.id}`;
-      // const productDocRef = doc(productsCollection, docId);
-      // const productDocRef = doc(productsCollection, product.id.toString());
-      // await setDoc(productDocRef, productData, { merge: true });
       console.log(`Pedido ${product.id} (${clientId}) sincronizado en Firestore.`);
 
       console.log("------ RESUMEN DE FILTROS ------");

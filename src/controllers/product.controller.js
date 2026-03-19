@@ -1,6 +1,5 @@
 const { getAllProducts, productsTiendaNube, getHistoryByRange } = require("../managers/product.manager");
 
-const DEFAULT_CLIENT_ID = "praga"
 
 const getProducts = async (req, res) => {
     try {
@@ -15,7 +14,7 @@ const getProducts = async (req, res) => {
 
 const syncProducts = async (req, res) => {
     try {
-        const clientId = req.query.clientId || DEFAULT_CLIENT_ID;
+        const clientId = req.query.clientId || null;
         const result = await productsTiendaNube(clientId);
         res.json(result);
     } catch (error) {

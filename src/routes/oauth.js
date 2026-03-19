@@ -57,7 +57,8 @@ router.get("/callback", async (req, res) => {
       access_token,
       user_agent: "Líverval (liverval.logistica@gmail.com)",
       fecha_conexion: new Date().toISOString(),
-      plataforma: "tiendanube"
+      plataforma: "tiendanube",
+      email: "emailCliente"
     };
 
     const clientRef = doc(db, "clients", clientId);

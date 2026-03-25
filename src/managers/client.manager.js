@@ -1,6 +1,8 @@
 const { collection, getDocs } = require("firebase/firestore");
 const { db } = require("../db/config");
 
+// Este código entero es para detectar qué cliente es el que ingresa o si es admin
+
 const getClientByEmail = async (req, res) => {
   try {
     const { email } = req.query;

@@ -44,7 +44,7 @@ router.get("/callback", async (req, res) => {
       }
     );
 
-    const storeName = storeResponse.data.name;
+    const storeName = storeResponse.data.name?.es || "Sin nombre";
 
     console.log("Nombre de tienda:", storeName);
 
@@ -65,6 +65,14 @@ router.get("/callback", async (req, res) => {
     await setDoc(clientRef, tienda, { merge: true });
 
     console.log("Tienda guardada en Firestore:", tienda);
+
+    console.log("CODE:", code);
+
+    console.log("TOKEN RESPONSE:", response.data);
+
+    console.log("STORE RESPONSE:", storeResponse.data);
+
+    console.log("GUARDANDO EN FIRESTORE...");
 
     return res.redirect("https://sistema.liverval.com.ar/integracion-exitosa");
 

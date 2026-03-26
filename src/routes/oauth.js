@@ -82,7 +82,9 @@ router.get("/callback", async (req, res) => {
 
     console.error("Error OAuth:", error.response?.data || error.message);
 
-    return res.status(500).send("Error conectando con Tiendanube");
+    return res.redirect("https://sistema.liverval.com.ar/integracion-exitosa");
+
+    // return res.status(500).send("Error conectando con Tiendanube");
 
   }
 

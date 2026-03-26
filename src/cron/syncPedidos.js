@@ -15,6 +15,11 @@ const iniciarCronSync = () => {
 
       const client = docSnap.data();
 
+      if (!client.clientId) {
+        console.log("Documento ignorado (no es tienda):", docSnap.id);
+        continue; // IMPORTANTE: usar continue, no return
+      }
+
       try {
 
         console.log(`🔄 Sincronizando pedidos para ${client.clientId}`);

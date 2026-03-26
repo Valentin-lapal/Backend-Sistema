@@ -12,7 +12,9 @@ router.get("/callback", async (req, res) => {
     const { code } = req.query;
 
     if (!code) {
-      return res.status(400).send("Authorization code missing");
+      // return res.status(400).send("Authorization code missing");
+      console.log("Callback sin code, ignorando...");
+      return res.redirect("https://sistema.liverval.com.ar/integracion-exitosa");
     }
 
     // 1️⃣ Obtener access_token

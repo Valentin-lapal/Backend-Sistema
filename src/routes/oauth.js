@@ -108,7 +108,7 @@ router.get("/callback", async (req, res) => {
     // ⚠️ Caso común: code ya usado
     if (error.response?.data?.error === "invalid_grant") {
       console.log("⚠️ Code ya usado → ignorando duplicado correctamente");
-      return res.send("OK");
+      return res.redirect("https://sistema.liverval.com.ar/integracion-exitosa");
     }
 
     // ❌ Error real → mostrar

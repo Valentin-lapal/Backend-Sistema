@@ -28,7 +28,7 @@ router.get("/callback", async (req, res) => {
   // 🔁 2. Evitar duplicados
   if (processedCodes.has(code)) {
     console.log("⚠️ Code ya procesado, ignorando duplicado");
-    return res.send("OK");
+    return res.redirect("https://sistema.liverval.com.ar/integracion-exitosa");
   }
 
   processedCodes.add(code);

@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const { db } = require("../db/config");
-const { doc, setDoc } = require("firebase/firestore");
+const { doc, setDoc, getDoc } = require("firebase/firestore");
 
 const router = express.Router();
 

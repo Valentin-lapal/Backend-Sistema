@@ -1,7 +1,7 @@
 const express = require ("express")
 const router = express.Router()
 const { getProducts, syncProducts, getHistory } = require("../controllers/product.controller");
-const { updateSituacion } = require("../managers/product.manager");
+const { updateSituacion, getProductById } = require("../managers/product.manager");
 
 
 // Rutas para productos
@@ -14,5 +14,7 @@ router.get("/history", getHistory);
 
 // Ruta para cambiar la situacion en el boton "Pendiente" (Pendiente / En curso / Entregado / Cancelado)
 router.put("/:id/situacion", updateSituacion);
+
+router.get("/:id", getProductById);
 
 module.exports = router

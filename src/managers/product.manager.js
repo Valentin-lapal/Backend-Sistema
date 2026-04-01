@@ -2,6 +2,7 @@ const { collection, getDocs, getDoc, doc, updateDoc, setDoc, query, where, } = r
 const { db } = require("../db/config");
 const fetch = require("node-fetch");
 require('dotenv').config();
+const { sendTrackingEmail } = require("../utils/sendEmail");
 
 
 const getClientConfig = async (clientId) => {
@@ -302,17 +303,33 @@ const updateSituacion = async (req, res) => {
     const productsCollection = collection(db, "products");
     const productDocRef = doc(productsCollection, id);
 
+    const docSnap = await getDoc(productDocRef);
+    if (!docSnap.exists()) {
+      return res.status(404).json({ error: "Pedido no encontrado" });
+    }
+
+    const data = docSnap.data();
+
     const updateData = { situacion };
 
     // Si se marca como Entregado, guardamos fecha de entrega permanente
-    if (situacion === "Entregado") {
-      const ahora = new Date().toISOString();
-      updateData.entregadoEn = ahora;
+    if (situacion === "entregado") {
+      // const ahora = new Date().toISOString();
+      updateData.entregadoEn = new Date().toISOString();
     }
 
     await updateDoc(productDocRef, updateData);
 
-    console.log(`Situacion del pedido ${id} actualizada a ${situacion}`);
+    if (data.email) {
+      if (situacion === "encurso") {
+        await sendTrackingEmail(data.email, id, "EN_CAMINO");
+      }
+
+      if (situacion === "entregado") {
+        await sendTrackingEmail(data.email, id, "ENTREGADO");
+      }
+    }
+    // console.log(`Situacion del pedido ${id} actualizada a ${situacion}`);
     res.json({
       message: "Situacion actualizada correctamente",
       id,
@@ -322,7 +339,30 @@ const updateSituacion = async (req, res) => {
     console.error("Error al actualizar situacion:", error);
     res.status(500).json({ error: "Error al actualizar la situacion" });
   }
+
 };
 
 
-module.exports = { getAllProducts, productsTiendaNube, updateSituacion, getHistoryByRange };
+const getProductById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const productRef = doc(db, "products", id);
+    const docSnap = await getDoc(productRef);
+
+    if (!docSnap.exists()) {
+      return res.status(404).json({ error: "Pedido no encontrado" });
+    }
+
+    res.json({
+      id: docSnap.id,
+      ...docSnap.data(),
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener pedido" });
+  }
+};
+
+
+module.exports = { getAllProducts, productsTiendaNube, updateSituacion, getHistoryByRange, getProductById };

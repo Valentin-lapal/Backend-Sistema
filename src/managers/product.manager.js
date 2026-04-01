@@ -320,12 +320,19 @@ const updateSituacion = async (req, res) => {
 
     await updateDoc(productDocRef, updateData);
 
+    console.log("Estado actualizado en DB:", situacion);
+
     if (data.email) {
+      console.log("Email del cliente:", data.email);
+      console.log("Situacion recibida:", situacion);
+
       if (situacion === "encurso") {
+        console.log("📧 Enviando email EN_CAMINO...");
         await sendTrackingEmail(data.email, id, "EN_CAMINO");
       }
 
       if (situacion === "entregado") {
+        console.log("📧 Enviando email ENTREGADO...");
         await sendTrackingEmail(data.email, id, "ENTREGADO");
       }
     }

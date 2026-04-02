@@ -325,32 +325,41 @@ const updateSituacion = async (req, res) => {
 
     console.log("Estado actualizado en sistema:", situacion);
 
-    if (data.email) {
-      console.log("Email del cliente:", data.email);
-      console.log("Situacion recibida:", situacion);
-
-      if (situacion === "encurso") {
-        console.log("📧 Enviando email EN_CAMINO...");
-        await sendTrackingEmail(data.email, id, "EN_CAMINO");
-      }
-
-      if (situacion === "entregado") {
-        console.log("📧 Enviando email ENTREGADO...");
-        await sendTrackingEmail(data.email, id, "ENTREGADO");
-      }
-    }
-    // console.log(`Situacion del pedido ${id} actualizada a ${situacion}`);
     res.json({
       message: "Situacion actualizada correctamente",
       id,
       situacion,
     });
+
+    if (data.email) {
+      (async () => {
+        try {
+          console.log("Email del cliente:", data.email);
+          console.log("Situacion recibida:", situacion);
+
+          if (situacion === "encurso") {
+            console.log("📧 Enviando email EN_CAMINO...");
+            await sendTrackingEmail(data.email, id, "EN_CAMINO");
+          }
+
+          if (situacion === "entregado") {
+            console.log("📧 Enviando email ENTREGADO...");
+            await sendTrackingEmail(data.email, id, "ENTREGADO");
+          }
+
+        } catch (emailError) {
+          console.error("❌ Error enviando email:", emailError.message);
+        }
+      })();
+    }
+    
   } catch (error) {
     console.error("Error al actualizar situacion:", error);
     res.status(500).json({ error: "Error al actualizar la situacion" });
   }
 
 };
+
 
 
 const getProductById = async (req, res) => {

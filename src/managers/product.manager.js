@@ -236,7 +236,7 @@ const getAllProducts = async (clientId = null) => {
 /**
  * Historial por rango de fechas (solo pedidos entregados).
  * from / to: strings YYYY-MM-DD (inclusive)
- */
+ 
 
 const getHistoryByRange = async ({ clientId = null, from, to }) => {
   try {
@@ -290,6 +290,10 @@ const getHistoryByRange = async ({ clientId = null, from, to }) => {
   }
 };
 
+*/
+
+
+
 
 const updateSituacion = async (req, res) => {
   const { id } = req.params; // id del DOCUMENTO Firestore (ej: "praga_1828...")
@@ -314,13 +318,12 @@ const updateSituacion = async (req, res) => {
 
     // Si se marca como Entregado, guardamos fecha de entrega permanente
     if (situacion === "entregado") {
-      // const ahora = new Date().toISOString();
       updateData.entregadoEn = new Date().toISOString();
     }
 
     await updateDoc(productDocRef, updateData);
 
-    console.log("Estado actualizado en DB:", situacion);
+    console.log("Estado actualizado en sistema:", situacion);
 
     if (data.email) {
       console.log("Email del cliente:", data.email);
@@ -372,4 +375,4 @@ const getProductById = async (req, res) => {
 };
 
 
-module.exports = { getAllProducts, productsTiendaNube, updateSituacion, getHistoryByRange, getProductById };
+module.exports = { getAllProducts, productsTiendaNube, updateSituacion, getProductById };

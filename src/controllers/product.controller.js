@@ -1,4 +1,4 @@
-const { getAllProducts, productsTiendaNube, getHistoryByRange } = require("../managers/product.manager");
+const { getAllProducts, productsTiendaNube } = require("../managers/product.manager");
 
 
 const getProducts = async (req, res) => {

@@ -169,7 +169,6 @@ const productsTiendaNube = async (clientId) => {
         estado: product?.status || "",
         estadoshi: product?.shipping_status || "",
         creacion:product?.created_at || "",
-        // situacion: "Pendiente",
       };
 
       if (!existePedido) {
@@ -233,68 +232,6 @@ const getAllProducts = async (clientId = null) => {
 };
 
 
-/**
- * Historial por rango de fechas (solo pedidos entregados).
- * from / to: strings YYYY-MM-DD (inclusive)
- 
-
-const getHistoryByRange = async ({ clientId = null, from, to }) => {
-  try {
-    const productsCollection = collection(db, "products");
-
-    const fromDate = `${from}T00:00:00`;
-    const toDate = `${to}T23:59:59`;
-
-    let constraints = [
-      where("situacion", "==", "Entregado"),
-      where("entregadoEn", ">=", fromDate),
-      where("entregadoEn", "<=", toDate),
-    ];
-
-    if (clientId) {
-      constraints.push(where("clientId", "==", clientId));
-    }
-
-    const q = query(productsCollection, ...constraints);
-    const snapshot = await getDocs(q);
-
-    const orders = snapshot.docs.map((docSnap) => ({
-      id: docSnap.id,
-      ...docSnap.data(),
-    }));
-
-    // Agrupamos por día (YYYY-MM-DD)
-    const historyByDay = {};
-
-    for (const order of orders) {
-      const baseFecha = order.entregadoEn || order.creacion || "";
-      const dateKey = baseFecha.slice(0, 10); // YYYY-MM-DD
-      if (!dateKey) continue;
-
-      if (!historyByDay[dateKey]) {
-        historyByDay[dateKey] = [];
-      }
-      historyByDay[dateKey].push(order);
-    }
-
-    return {
-      clientId: clientId || "all",
-      from,
-      to,
-      days: historyByDay,
-      total: orders.length,
-    };
-  } catch (error) {
-    console.error("Error al obtener historial:", error);
-    throw error;
-  }
-};
-
-*/
-
-
-
-
 const updateSituacion = async (req, res) => {
   const { id } = req.params; // id del DOCUMENTO Firestore (ej: "praga_1828...")
   const { situacion } = req.body;
@@ -339,7 +276,7 @@ const updateSituacion = async (req, res) => {
 
           if (situacion === "encurso") {
             console.log("📧 Enviando email EN_CAMINO...");
-            await sendTrackingEmail(data.email, id, "EN_CAMINO");
+            await sendTrackingEmail(data.email, id, "EN_CAMINO", data.store_name);
           }
 
           if (situacion === "entregado") {

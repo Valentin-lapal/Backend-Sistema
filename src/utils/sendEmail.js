@@ -29,7 +29,7 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
 
   if (estado === "ENTREGADO") {
     titulo = "Tu envío fue entregado 📦";
-    mensaje = "Tu pedido fue entregado correctamente.\n\nEsperamos que disfrutes mucho tu compra😊";
+    mensaje = `Tu pedido de ${storeName} fue entregado correctamente.\n\nEsperamos que disfrutes mucho tu compra😊`;
   }
 
   await transporter.sendMail({
@@ -47,7 +47,7 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
         <p>${mensaje}</p>
 
         <a href="${link}" style="
-          background:rba(45,6,45);
+          background:rgb(45,6,45);
           padding:14px 24px;
           color:white;
           text-decoration:none;

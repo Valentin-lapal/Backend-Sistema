@@ -281,7 +281,7 @@ const updateSituacion = async (req, res) => {
 
           if (situacion === "entregado") {
             console.log("📧 Enviando email ENTREGADO...");
-            await sendTrackingEmail(data.email, id, "ENTREGADO");
+            await sendTrackingEmail(data.email, id, "ENTREGADO", data.store_name);
           }
 
         } catch (emailError) {

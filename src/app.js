@@ -7,15 +7,14 @@ const { iniciarCronSync } = require("./cron/syncPedidos");
 
 require("dotenv").config();
 
-
 const allowedOrigins = [
     "https://sistema.liverval.com.ar",
     "https://liverval.com.ar",
     "https://www.liverval.com.ar",
-     // "http://localhost:5173", // <- descomentar para pruebas locales
-    ];
+    // "http://localhost:5173",
+];
 
-app.use(cors({
+const corsOptions = {
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
@@ -23,16 +22,13 @@ app.use(cors({
             callback(new Error('Origen no permitido por CORS'));
         }
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
-}));
-
-
-// app.options('/api/*', cors());
+};
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); //  ✅ preflight para TODAS las rutas
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use("/api", routes);
@@ -41,15 +37,12 @@ app.get("/", (req, res) => {
     res.send("Bienvenido a la API de Sistema");
 });
 
-
 iniciarCronSync();
 
 const PORT = process.env.PORT || 5000;
-
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto http://localhost:${PORT}`);
 });
 
-
-module.exports = app
+module.exports = app;

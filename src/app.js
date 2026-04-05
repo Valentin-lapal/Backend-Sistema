@@ -29,10 +29,10 @@ app.use(cors({
 }));
 
 
-// app.options('/api/*', cors());
+app.options('/api/*', cors());
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // ✅ preflight para TODAS las rutas
+// app.use(cors(corsOptions));
+//app.options("*", cors(corsOptions));  ✅ preflight para TODAS las rutas
 
 app.use(express.json());
 app.use("/api", routes);

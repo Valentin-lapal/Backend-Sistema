@@ -10,6 +10,8 @@ require("dotenv").config();
 
 const allowedOrigins = [
     "https://sistema.liverval.com.ar",
+    "https://liverval.com.ar",
+    "https://www.liverval.com.ar",
      // "http://localhost:5173", // <- descomentar para pruebas locales
     ];
 

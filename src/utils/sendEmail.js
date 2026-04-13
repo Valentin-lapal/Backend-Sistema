@@ -32,7 +32,7 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
 
   if (estado === "ENTREGADO") {
     titulo = "Tu envío fue entregado 📦";
-    mensaje = `Tu pedido de ${storeName} fue entregado correctamente.<br><br>Esperamos que disfrutes mucho tu compra😊`;
+    mensaje = `Tu pedido de ${storeName} fue entregado correctamente.<br><br>Por cualquier inconveniente, podes escribirnos a Info@liverval.com.ar<br><br>Esperamos que disfrutes mucho tu compra😊`;
   }
 
   await resend.emails.send({

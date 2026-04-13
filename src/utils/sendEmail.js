@@ -27,7 +27,7 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
 
   if (estado === "EN_CAMINO") {
     titulo = "Tu envío está en camino 🚚";
-    mensaje = `Hola😊 Te escribimos desde Líverval, empresa de logística para ecommerce.<br>Nos complace informarte que tu pedido de ${storeName || "tu tienda"} ya está en camino y lo vas a estar recibiendo en tu domicilio hoy entre las 12:00 y 20:00 horas.<br><br>Número de seguimiento: ${trackingId}<br><br>¡Gracias por tu compra!😊`;
+    mensaje = `Hola😊 Te escribimos desde Líverval, empresa de logística para ecommerce.<br>Nos complace informarte que tu pedido de ${storeName || "tu tienda"} ya está en camino y lo vas a estar recibiendo en tu domicilio hoy entre las 12:00 y 20:00 horas.<br><br>Por cualquier inconveniente, podes escribirnos a Info@liverval.com.ar<br><br>¡Gracias por tu compra!😊`;
   }
 
   if (estado === "ENTREGADO") {
@@ -44,7 +44,7 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
         <h2>${titulo}</h2>
 
         <p style="color:#555; font-size:14px;">
-         N° de envío: <strong>${trackingId}</strong>
+         N° de seguimiento de envío: <strong>${trackingId}</strong>
         </p>
 
         <p>${mensaje}</p>

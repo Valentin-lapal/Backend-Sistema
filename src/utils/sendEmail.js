@@ -1,20 +1,5 @@
 
-// const nodemailer = require("nodemailer");
 const { Resend } = require("resend");
-
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.hostinger.com",
-//   port: 465,
-//   secure: true,
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASS
-//   },
-//   connectionTimeout: 10000,
-//   greetingTimeout: 10000,
-//   socketTimeout: 10000,
-//   family: 4,
-// });
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -32,41 +17,51 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
 
   if (estado === "ENTREGADO") {
     titulo = "Tu envío fue entregado 📦";
-    mensaje = `Tu pedido de ${storeName} fue entregado correctamente.<br><br>Por cualquier inconveniente, podes escribirnos a Info@liverval.com.ar<br><br>Esperamos que disfrutes mucho tu compra😊`;
+    mensaje = `Tu pedido de ${storeName || "tu tienda"} fue entregado correctamente.<br><br>Por cualquier inconveniente, podes escribirnos a Info@liverval.com.ar<br><br>Esperamos que disfrutes mucho tu compra😊`;
   }
 
-  await resend.emails.send({
-    from: "Líverval Logística <onboarding@resend.dev>",
-    to,
-    subject: titulo,
-    html: `
-      <div style="font-family: Poppins; text-align:center; max-width:600px; margin:auto;">
-        <h2>${titulo}</h2>
+  try {
+    const result = await resend.emails.send({
+      from: "Líverval Logística <onboarding@resend.dev>",
+      to,
+      subject: titulo,
+      html: `
+        <div style="font-family: Poppins; text-align:center; max-width:600px; margin:auto;">
+          <h2>${titulo}</h2>
 
-        <p style="color:#555; font-size:14px;">
-         N° de seguimiento de envío: <strong>${trackingId}</strong>
-        </p>
+          <p style="color:#555; font-size:14px;">
+           N° de seguimiento de envío: <strong>${trackingId}</strong>
+          </p>
 
-        <p>${mensaje}</p>
+          <p>${mensaje}</p>
 
-        <a href="${link}" style="
-          background:rgb(45,6,45);
-          padding:14px 24px;
-          color:white;
-          text-decoration:none;
-          border-radius:8px;
-          display:inline-block;
-          margin-top:20px;
-        ">
-          Seguir envío
-        </a>
+          <a href="${link}" style="
+            background:rgb(45,6,45);
+            padding:14px 24px;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+            display:inline-block;
+            margin-top:20px;
+          ">
+            Seguir envío
+          </a>
 
-        <p style="margin-top:30px; font-size:12px; color:#888;">
-          Equipo Líverval
-        </p>
-      </div>
-    `
-  });
+          <p style="margin-top:30px; font-size:12px; color:#888;">
+            Equipo Líverval
+          </p>
+        </div>
+      `
+    });
+
+    console.log("✅ Email enviado correctamente a:", to);
+    console.log("📨 Respuesta Resend:", JSON.stringify(result));
+
+  } catch (err) {
+    console.error("❌ Error enviando email a:", to);
+    console.error("❌ Detalle error Resend:", JSON.stringify(err));
+  }
+
 };
 
 module.exports = { sendTrackingEmail };

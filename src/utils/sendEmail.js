@@ -22,7 +22,7 @@ const sendTrackingEmail = async (to, trackingId, estado, storeName) => {
 
   try {
     const result = await resend.emails.send({
-      from: "Líverval Logística <onboarding@resend.dev>",
+      from: "Líverval Logística <no-reply@liverval.com.ar>",
       to,
       subject: titulo,
       html: `

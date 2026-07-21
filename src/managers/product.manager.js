@@ -117,6 +117,8 @@ const productsTiendaNube = async (clientId) => {
 
       const docSnapshot = await getDoc(productDocRef);
       const existePedido = docSnapshot.exists();
+
+      console.log(`Pedido ${product.id} - shipping: "${product.shipping}" - shipping_option: "${product.shipping_option}" - shipping_option_code: "${product.shipping_option_code}"`);
       
       // Si la provincia no está en la lista, se descarta
       if (!provinciasValidas.map(p => p.toLowerCase()).includes((product?.billing_province || "").toLowerCase())) {

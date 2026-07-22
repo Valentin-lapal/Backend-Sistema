@@ -171,6 +171,8 @@ const productsTiendaNube = async (clientId) => {
         estado: product?.status || "",
         estadoshi: product?.shipping_status || "",
         creacion:product?.created_at || "",
+        shipping: product?.shipping || "",
+        shipping_option: product?.shipping_option || "",
       };
 
       if (!existePedido) {
